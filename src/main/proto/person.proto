@@ -1,0 +1,82 @@
+syntax = "proto3"; // Specify proto3 syntax
+
+package person; // Package name used in generated code
+
+// Define options for Java code generation
+option java_package = "org.acme.person.grpc";
+option java_multiple_files = true; // Generate each message/service in its own file
+
+// The service definition with CRUD operations
+service PersonService {
+  // --- Create ---
+  // Creates a new person
+  rpc CreatePerson (CreatePersonRequest) returns (PersonResponse); // Return the created person with ID
+
+  // --- Read ---
+  // Finds a person by their ID
+  rpc FindById (PersonByIdRequest) returns (PersonResponse);
+  // Finds people by their name (can return multiple)
+  rpc FindByName (PersonByNameRequest) returns (PeopleResponse);
+  // Gets all people
+  rpc GetAll (GetAllPeopleRequest) returns (PeopleResponse);
+
+  // --- Update ---
+  // Updates an existing person
+  rpc UpdatePerson (UpdatePersonRequest) returns (PersonResponse); // Return the updated person
+
+  // --- Delete ---
+  // Deletes a person by their ID
+  rpc DeletePerson (DeletePersonRequest) returns (DeletePersonResponse); // Return success status
+}
+
+// --- Message Structures ---
+
+// Message structure for a Person
+message Person {
+  int64 id = 1;
+  string name = 2;
+}
+
+// --- Create Messages ---
+message CreatePersonRequest {
+  string name = 1; // Only need name to create
+}
+
+// --- Read Messages ---
+message PersonByIdRequest {
+  int64 id = 1;
+}
+
+message PersonByNameRequest {
+  string name = 1;
+}
+
+message GetAllPeopleRequest {} // Empty request
+
+// --- Update Messages ---
+message UpdatePersonRequest {
+  int64 id = 1;   // ID of the person to update
+  string name = 2; // New name for the person
+}
+
+// --- Delete Messages ---
+message DeletePersonRequest {
+  int64 id = 1; // ID of the person to delete
+}
+
+// --- Response Messages ---
+
+// Response containing a single Person (optional for not found / create/update result)
+message PersonResponse {
+  optional Person person = 1; // Use optional to handle not found cases or return created/updated entity
+}
+
+// Response containing a list of people
+message PeopleResponse {
+  repeated Person people = 1;
+}
+
+// Response for the delete operation
+message DeletePersonResponse {
+  bool success = 1; // Indicates if the deletion was successful
+}
